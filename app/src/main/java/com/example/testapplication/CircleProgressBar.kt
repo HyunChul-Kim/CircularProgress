@@ -11,28 +11,36 @@ import kotlin.math.sin
 
 class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): View(context, attrs, defStyleAttr) {
 
+    private var startDegree = 270f
     private var thickness = 10f
     private var progressStartColor = Color.BLACK
     private var progressCenterColor = Color.BLACK
     private var progressEndColor = Color.BLACK
     private var progressBackgroundColor = Color.WHITE
     private var isRoundedEdge = false
+    private var isRoundedEndPoint = false
+    private var progressMaxValue = 10f
+    private var progressValue = 10f
 
+    private var progressBackgroundPaint = Paint()
     private var progressPaint = Paint()
     private var roundPaint = Paint()
     private var progressRect = RectF()
 
+    private var gradientColors: IntArray
+
     private var viewWidth = 0
     private var viewHeight = 0
     private var radius = 0f
-    private var startAngle = 270f
-
-    private var progressMaxValue = 10f
-    private var progressValue = 10f
 
     init {
         applyAttributeSet(attrs, defStyleAttr)
         initPaint()
+        gradientColors = intArrayOf(progressStartColor, progressCenterColor, progressEndColor)
+    }
+
+    fun setProgressStartDegree(degree: Float) {
+        startDegree = degree + 270f
     }
 
     fun setProgressMaxValue(value: Float) {
@@ -48,16 +56,21 @@ class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: Attri
         invalidate()
     }
 
+    fun setProgressColor(colors: IntArray) {
+        gradientColors = colors
+    }
+
     private fun applyAttributeSet(attrs: AttributeSet?, defStyleAttr: Int) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressBar, defStyleAttr, 0)
 
+        startDegree = typedArray.getFloat(R.styleable.CircleProgressBar_progressStartDegree, 0f) + 270f
         thickness = typedArray.getFloat(R.styleable.CircleProgressBar_progressThickness, 10f)
         progressStartColor = typedArray.getColor(R.styleable.CircleProgressBar_progressStartColor, Color.BLACK)
-        progressCenterColor = typedArray.getColor(R.styleable.CircleProgressBar_progressCenterColor, Color.BLACK)
-        progressEndColor = typedArray.getColor(R.styleable.CircleProgressBar_progressEndColor, Color.BLACK)
+        progressCenterColor = typedArray.getColor(R.styleable.CircleProgressBar_progressCenterColor, progressStartColor)
+        progressEndColor = typedArray.getColor(R.styleable.CircleProgressBar_progressEndColor, progressStartColor)
         progressBackgroundColor = typedArray.getColor(R.styleable.CircleProgressBar_progressBackgroundColor, Color.WHITE)
         isRoundedEdge = typedArray.getBoolean(R.styleable.CircleProgressBar_roundedEdge, false)
-
+        isRoundedEndPoint = typedArray.getBoolean(R.styleable.CircleProgressBar_roundedEndPoint, false)
         progressMaxValue = typedArray.getFloat(R.styleable.CircleProgressBar_progressMaxValue, 10f)
         progressValue = typedArray.getFloat(R.styleable.CircleProgressBar_progressValue, 10f)
 
@@ -71,20 +84,28 @@ class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun initPaint() {
+        progressBackgroundPaint.isAntiAlias = true
+        progressBackgroundPaint.style = Paint.Style.STROKE
+        progressBackgroundPaint.strokeWidth = thickness
+        progressBackgroundPaint.color = progressBackgroundColor
+
         progressPaint.isAntiAlias = true
         progressPaint.style = Paint.Style.STROKE
         progressPaint.strokeWidth = thickness
+        if(isRoundedEdge) {
+            progressPaint.strokeCap = Paint.Cap.ROUND
+        }
 
         roundPaint.isAntiAlias = true
         roundPaint.style = Paint.Style.FILL
     }
 
     private fun initShader() {
-        progressPaint.shader = SweepGradient(radius, radius, intArrayOf(progressStartColor, progressCenterColor, progressEndColor), null).apply {
-            setLocalMatrix(Matrix().apply { postRotate(270f, radius, radius) })
+        progressPaint.shader = SweepGradient(radius, radius, gradientColors, null).apply {
+            setLocalMatrix(Matrix().apply { postRotate(startDegree, radius, radius) })
         }
-        roundPaint.shader = SweepGradient(radius, radius, intArrayOf(progressStartColor, progressCenterColor, progressEndColor), null).apply {
-            setLocalMatrix(Matrix().apply { postRotate(270f, radius, radius) })
+        roundPaint.shader = SweepGradient(radius, radius, gradientColors, null).apply {
+            setLocalMatrix(Matrix().apply { postRotate(startDegree, radius, radius) })
         }
     }
 
@@ -110,9 +131,10 @@ class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: Attri
         super.onDraw(canvas)
         val degree = (progressValue / progressMaxValue * 360f)
         canvas.apply {
-            drawArc(progressRect, startAngle, degree, false, progressPaint)
-            if(degree != 0f) {
-                drawCircle(getEndPointX(degree + startAngle).toFloat(), getEndPointY(degree + startAngle).toFloat(), thickness / 2, roundPaint)
+            drawArc(progressRect, startDegree, 360f, false, progressBackgroundPaint)
+            drawArc(progressRect, startDegree, degree, false, progressPaint)
+            if(isRoundedEndPoint && degree != 0f) {
+                drawCircle(getEndPointX(degree + startDegree).toFloat(), getEndPointY(degree + startDegree).toFloat(), thickness / 2, roundPaint)
             }
         }
     }
