@@ -1,4 +1,4 @@
-package com.example.testapplication
+package com.chul.circularprogress
 
 import android.content.Context
 import android.graphics.*
@@ -9,7 +9,7 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
-class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): View(context, attrs, defStyleAttr) {
+class CircleProgress @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): View(context, attrs, defStyleAttr) {
 
     private var startDegree = 270f
     private var thickness = 10f
@@ -61,18 +61,18 @@ class CircleProgressBar @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun applyAttributeSet(attrs: AttributeSet?, defStyleAttr: Int) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressBar, defStyleAttr, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgress, defStyleAttr, 0)
 
-        startDegree = typedArray.getFloat(R.styleable.CircleProgressBar_progressStartDegree, 0f) + 270f
-        thickness = typedArray.getFloat(R.styleable.CircleProgressBar_progressThickness, 10f)
-        progressStartColor = typedArray.getColor(R.styleable.CircleProgressBar_progressStartColor, Color.BLACK)
-        progressCenterColor = typedArray.getColor(R.styleable.CircleProgressBar_progressCenterColor, progressStartColor)
-        progressEndColor = typedArray.getColor(R.styleable.CircleProgressBar_progressEndColor, progressStartColor)
-        progressBackgroundColor = typedArray.getColor(R.styleable.CircleProgressBar_progressBackgroundColor, Color.WHITE)
-        isRoundedEdge = typedArray.getBoolean(R.styleable.CircleProgressBar_roundedEdge, false)
-        isRoundedEndPoint = typedArray.getBoolean(R.styleable.CircleProgressBar_roundedEndPoint, false)
-        progressMaxValue = typedArray.getFloat(R.styleable.CircleProgressBar_progressMaxValue, 10f)
-        progressValue = typedArray.getFloat(R.styleable.CircleProgressBar_progressValue, 10f)
+        startDegree = typedArray.getFloat(R.styleable.CircleProgress_progressStartDegree, 0f) + 270f
+        thickness = typedArray.getFloat(R.styleable.CircleProgress_progressThickness, 10f)
+        progressStartColor = typedArray.getColor(R.styleable.CircleProgress_progressStartColor, Color.BLACK)
+        progressCenterColor = typedArray.getColor(R.styleable.CircleProgress_progressCenterColor, progressStartColor)
+        progressEndColor = typedArray.getColor(R.styleable.CircleProgress_progressEndColor, progressStartColor)
+        progressBackgroundColor = typedArray.getColor(R.styleable.CircleProgress_progressBackgroundColor, Color.WHITE)
+        isRoundedEdge = typedArray.getBoolean(R.styleable.CircleProgress_roundedEdge, false)
+        isRoundedEndPoint = typedArray.getBoolean(R.styleable.CircleProgress_roundedEndPoint, false)
+        progressMaxValue = typedArray.getFloat(R.styleable.CircleProgress_progressMaxValue, 10f)
+        progressValue = typedArray.getFloat(R.styleable.CircleProgress_progressValue, 10f)
 
         typedArray.recycle()
     }

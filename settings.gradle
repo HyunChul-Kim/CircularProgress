@@ -1,3 +1,3 @@
-include ':testlibrary'
+include ':CircularProgress'
 include ':app'
 rootProject.name = "TestApplication"
